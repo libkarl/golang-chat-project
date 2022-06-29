@@ -25,7 +25,7 @@ class ToDoList extends Component {
     ComponentDidMount() {
         // getTask bude funkce s voláním backend API, 
         // pro získání úkolu
-        this.getTask
+        this.getTask();
     }
 
     render(){
@@ -35,6 +35,18 @@ class ToDoList extends Component {
                     <Header className="header" as="h2" color= "yellow">
                         TO DO LIST
                     </Header>
+                </div>
+                < div className="row">
+                    <Form onSubmit={this.onSubmit} >
+                        <Input 
+                        type="text" 
+                        name="task" 
+                        onChange={this.onChange} 
+                        value  = {this.state.task} 
+                        fluid 
+                        placeholder="Create Task"> 
+                        />
+                    </Form>
                 </div>
             </div>
         );
