@@ -45,7 +45,7 @@ class ToDoList extends Component {
                         value  = {this.state.task} 
                         fluid 
                         placeholder="Create Task"> 
-                        />
+                        ></Input>
                     </Form>
                 </div>
             </div>
