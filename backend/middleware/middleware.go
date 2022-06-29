@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/gorrila/mux"
+	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
 	"github.com/libkarl/golang-chat-project/models"
 	"go.mongodb.org/mongo-driver/bson"
@@ -94,26 +94,55 @@ func TaskComplete(w http.ResponseWriter, r *http.Request) {
 	// použití balíčku mux pro získání parametrů a uložení do proměnné
 	// protože potřebujeme ID tasku, které bude předáno 
 	params := mux.Vars(r)
-	CompleteTas(params["id"])
+	CompleteTask(params["id"])
 	json.NewEncoder(w).Encode(params["id"])
 }
 
-func UndoTask() error {
-	return nil
+func UndoTask(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/x-www-form-urlencoded")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "PUT")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+	params := mux.Vars(r) 
+	UndoTaskByID(params["id"])
+	json.NewEncoder(w).Encode(params["id"])
 }
 
-func DeleteTask() error {
+func DeleteTask(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/x-www-form-urlencoded")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "DELETE")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+	params := mux.Vars(r)
+	DeleteTaskByID(params["id"])
+
+}
+ 
+func deleteAllTasks(w http.ResponseWriter, r *http.Request)  {
+	w.Header().Set("Content-Type", "application/x-www-form-urlencoded")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	count := DeleteAll()
+	json.NewEncoder(w).Encode(count)
+}
+
+func getAllTasks() error {
 	return nil
 }
  
-func deleteAllTasks() error {
-	return nil
-}
-
-func CompleteTas(task string) {
+func insertOneTask(task models.ToDoList) {
 
 }
 
-func getAllTasks() {
+func CompleteTask(params map[string]string) {
+
+}
+
+func DeleteTaskByID(){
+
+}
+
+func DeleteAll() {
 	
 }
