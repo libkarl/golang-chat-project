@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"github.com/libkarl/golang-chat-project/backend/router"
+	"github.com/libkarl/golang-chat-project/router"
 )
 
 func main(){
 	r := router.Router()
 	fmt.Println("starting the server on port 9000..") 
 
-	log.Fatal(htpp.ListenAndServe(":9000", r))
+	log.Fatal(http.ListenAndServe(":9000", r))
 	
 }
