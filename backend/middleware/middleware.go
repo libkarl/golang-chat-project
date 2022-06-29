@@ -120,29 +120,91 @@ func DeleteTask(w http.ResponseWriter, r *http.Request) {
 
 }
  
-func deleteAllTasks(w http.ResponseWriter, r *http.Request)  {
+func DeleteAllTasks(w http.ResponseWriter, r *http.Request)  {
 	w.Header().Set("Content-Type", "application/x-www-form-urlencoded")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	count := DeleteAll()
 	json.NewEncoder(w).Encode(count)
 }
 
-func getAllTasks() error {
-	return nil
+func getAllTasks() []primitive.M {
+	// do cur se uloží vše v kolekci pomocí funkce Find 
+	// pokud dám funkci Find prázdný dotaz jak to zapsal níže,
+	// znamená to v mongoDB, že chci vše co je v kolekci 
+	// říká se tomu empty query
+	// pokud bych chtěl konkrétní task, psal bych name = něco např.
+	// decodovat = odhalit informaci skrytou uvnitř
+	cur, err := collection.Find(context.Background(), bson.D{{}})
+	if err != nil {
+		log.Fatal(err)
+	}
+	// proměnná results je slice formátu M z bson primitiv
+	// to dělá to to je neuspořídaná reprezentace Bson formatu
+	var results []primitive.M
+	// next posunuje mezi jednotlivými položkami v kolekci při
+	// iteraci skrz cursor
+	for cur.Next(context.Background()){
+		var result bson.M
+		// provede unmarshal předané položky do result
+		// protože golang nemůže pracovat přímo s formatem jaký je
+		// v mongoDB 
+		// v případě problému uloží do e error
+		e := cur.Decode(&result)
+		if e != nil {
+			log.Fatal(e)
+		}
+		// decodovaný výsledek přidá do results
+		results = append(results, result)
+
+		
+	}
+
+	// what the fuck is this.. ? 
+	if err := cur.Err(); err != nil {
+		log.Fatal(err)
+
+	}
+
+	// ukončení spojení s čím ? 
+	cur.Close(context.Background())
+	return results
+
+
 }
  
+
+
+func CompleteTask(task string) {
+	// úkol který chci označit jako dokončený má nějaké ID
+	// tohle id předávám jako filter do databáze 
+	// vytáhnu ho pomocí var z requestu, je ve formátu Hex
+	// takže ho překlopím do structury ObjectID
+	id, _ := primitive.ObjectIDFromHex(task)
+	// získané id typu ObjectID překlopím do typu primitive.M
+	filter := bson.M{"_id":id}
+	// změním stav u tohoto Id na true
+	// napsaná kriteria dle kterých se upgraduje stav položky
+	// v databazi
+	update := bson.M{"$set":bson.M{"status":true}}
+	// UpdateOne je funkce z MongoDB, dám jí kontext, podle čeho má vybrat co upgraduje
+	// dám jí parametry změny a dostanu výsledek 
+	result, err := collection.UpdateOne(context.Background(), filter, update)
+	if err !=nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println("modified count:", result)
+}
+
+
 func insertOneTask(task models.ToDoList) {
 
-}
-
-func CompleteTask(params map[string]string) {
-
-}
+} 
 
 func DeleteTaskByID(){
 
 }
 
 func DeleteAll() {
-	
+
 }
