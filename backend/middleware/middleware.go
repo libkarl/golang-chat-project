@@ -198,13 +198,47 @@ func CompleteTask(task string) {
 
 
 func insertOneTask(task models.ToDoList) {
+	insertResult, err := collection.InsertOne(context.Background(), task)
 
+	if err !=nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println("Insert a single task: ", insertResult.InsertedID)
 } 
 
-func DeleteTaskByID(){
+func UndoTaskByID(task string){
+	id,_ := primitive.ObjectIDFromHex(task)
+	filter := bson.M{"_id":id}
+	update := bson.M{"$set":bson.M{"status":false}}
+	result, err := collection.UpdateOne(context.Background(), filter, update)
+	if err !=nil {
+		log.Fatal(err)
+	}
+	// modified count na result vrátí počet modifikovaných dokumentů
+	fmt.Println("The number of modified document", result.ModifiedCount)
 
 }
 
-func DeleteAll() {
+func DeleteTaskByID(task string){
+	id, _ := primitive.ObjectIDFromHex(task)
+	filter := bson.M{"_id":id}
+	d, err := collection.DeleteOne(context.Background(), filter)
+	if err != nil {
+		log.Fatal(err)
+	}
+	// vypíše počet odstraněných dokumentů
+	fmt.Println("Deleted Document", d.DeletedCount)
+}
 
+func DeleteAll() int64{
+	// pro smazání mnoha záznamů najednou je nutné použí funkci delete many
+	d, err := collection.DeleteMany(context.Background(), bson.D{{}})
+	if err !=nil {
+		log.Fatal(err)
+	}
+	fmt.Println("Number of deleted document", d.DeletedCount)
+	// funkce z mongo DB DeletedCount vrací výstup jako int64 
+	// proto je výstup z funkce nastaven na int64
+	return d.DeletedCount
 }
