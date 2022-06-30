@@ -32,7 +32,7 @@ func loadTheEnv() {
 }
 
 func createDBInstance() {
-	connectionString := os.Getenv("DB_URL")
+	connectionString := os.Getenv("DB_URI")
 	dbName := os.Getenv("DB_NAME")
 	collName := os.Getenv("DB_COLLECTION_NAME")
 	// vytáhne nastavení klienta z mongo driverů a předá mu URL databáze
